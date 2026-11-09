@@ -75,10 +75,19 @@ def create_pyvista_grid(numpy_grid):
 
     return pv_grid
 
-def visualize_interactive(vista_grid):
+def visualize_interactive(vista_grid, elevation_exaggeration):
+
+    # Make a copy of the grid to preserve original data
+    modified_grid = vista_grid.copy(deep=True)
+    modified_grid.points[:, 2] *= elevation_exaggeration
+
     # open PyVista StructuredGrid as a render in an interactive window
     plotter = pv.Plotter()
-    plotter.add_mesh(vista_grid, color="lightblue", show_edges=False)
+    plotter.add_mesh(
+        modified_grid,
+        color="lightblue",
+        show_edges=False
+    )
     plotter.show()
 
 def save_birdseye_png(vista_grid, fpath_out_nc):
@@ -93,4 +102,4 @@ def save_grid_data(vista_grid, fpath_out_nc):
 if __name__ == "__main__":
     grid = get_nc_array(fpath_nc)
     pv_grid = create_pyvista_grid(grid)
-    visualize_interactive(pv_grid)
+    visualize_interactive(pv_grid, 10)
