@@ -66,6 +66,8 @@ def create_pyvista_grid(numpy_grid):
     # create structured grid
     pv_grid = pv.StructuredGrid(x_m, y_m, z)
 
+    pv_grid["Elevation"] = z.ravel(order="F")
+
     # Print resulting grid information
     print("\nPYVISTA GRID:")
     print("Dimensions:", pv_grid.dimensions)
@@ -84,9 +86,18 @@ def visualize_interactive(vista_grid, elevation_exaggeration):
     # open PyVista StructuredGrid as a render in an interactive window
     plotter = pv.Plotter()
     plotter.add_mesh(
+        # pass in grid
         modified_grid,
-        color="lightblue",
-        show_edges=False
+        # tieback to array reference name assigned earlier in create_pyvista_grid()
+        scalars = "Elevation",
+        # pick a color palate to use on map; replaces "color" from earlier iterations
+        cmap = "RdBu_r",
+        # minimum and maximum elevations colorbar uses to assign color values to points; uses dataset units (meters in this case)'
+        clim = [-50, 2500],
+        # show edges boolean
+        show_edges=False,
+        # configures legend for graphic
+        scalar_bar_args = {"title": "Elevation (meters)"}
     )
     plotter.show()
 
